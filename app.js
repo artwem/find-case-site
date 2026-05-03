@@ -151,6 +151,7 @@ function initHome() {
         activeCategory = btn.dataset.cat;
         filterEl.querySelectorAll('.material-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
         render(searchEl.value);
       });
     });
