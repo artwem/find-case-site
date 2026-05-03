@@ -101,13 +101,11 @@ function initHome() {
   if (!listEl) return;
 
   let allRows = [];
-  let activeCategory = null;
+  let activeCategory = '';
 
   function render(filter = '') {
     const q = filter.trim().toLowerCase();
-    const rows = activeCategory
-      ? allRows.filter(r => r.cp_category === activeCategory)
-      : allRows;
+    const rows = allRows.filter(r => r.cp_category === activeCategory);
 
     const modelMap = new Map();
     for (const row of rows) {
@@ -133,26 +131,24 @@ function initHome() {
     }
     emptyEl.hidden = true;
 
-    const catParam = activeCategory ? `&cat=${encodeURIComponent(activeCategory)}` : '';
     listEl.innerHTML = filtered.map(model => `
-      <a class="model-card" href="model.html?m=${encodeURIComponent(model)}${catParam}">
+      <a class="model-card" href="model.html?m=${encodeURIComponent(model)}&cat=${encodeURIComponent(activeCategory)}">
         <div class="model-name">${escapeHtml(model)}</div>
         <span class="model-arrow">↗</span>
       </a>`).join('');
   }
 
   function renderTabs(categories) {
-    if (!filterEl || categories.length < 2) return;
-    filterEl.innerHTML = ['__all__', ...categories].map(cat => {
-      const isAll = cat === '__all__';
-      const label = isAll ? 'Все' : shortCategoryName(cat);
-      const active = isAll && !activeCategory || cat === activeCategory;
+    if (!filterEl || !categories.length) return;
+    filterEl.innerHTML = categories.map(cat => {
+      const label = shortCategoryName(cat);
+      const active = cat === activeCategory;
       return `<button class="material-tab${active ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(label)}</button>`;
     }).join('');
 
     filterEl.querySelectorAll('.material-tab').forEach(btn => {
       btn.addEventListener('click', () => {
-        activeCategory = btn.dataset.cat === '__all__' ? null : btn.dataset.cat;
+        activeCategory = btn.dataset.cat;
         filterEl.querySelectorAll('.material-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         render(searchEl.value);
@@ -164,9 +160,16 @@ function initHome() {
     .then(rows => {
       allRows = rows;
 
-      const catSet = new Set();
-      for (const row of rows) { if (row.cp_category) catSet.add(row.cp_category); }
-      renderTabs(Array.from(catSet).sort());
+      const catModels = new Map();
+      for (const row of rows) {
+        if (!row.cp_category || !row.cp_model) continue;
+        if (!catModels.has(row.cp_category)) catModels.set(row.cp_category, new Set());
+        catModels.get(row.cp_category).add(row.cp_model);
+      }
+      const categories = Array.from(catModels.keys())
+        .sort((a, b) => catModels.get(b).size - catModels.get(a).size);
+      activeCategory = categories[0] || '';
+      renderTabs(categories);
 
       render();
     })
