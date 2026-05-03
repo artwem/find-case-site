@@ -235,6 +235,32 @@ body {
 .clear-btn.visible { opacity: 1; }
 .clear-btn:hover { color: var(--accent); }
 
+/* MATERIAL FILTER TABS */
+.material-filter {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.material-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.6rem 1.1rem;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.material-tab:hover { background: var(--bg-alt); color: var(--ink); }
+.material-tab.active { background: var(--ink); color: var(--bg); }
+
 /* MODELS LIST */
 .models {
   display: grid;

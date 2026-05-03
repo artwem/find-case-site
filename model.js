@@ -12,6 +12,7 @@
 
   const params = new URLSearchParams(window.location.search);
   const modelName = params.get('m');
+  const categoryFilter = params.get('cat') || null;
 
   if (!modelName) {
     titleEl.textContent = 'Модель не указана';
@@ -24,7 +25,10 @@
 
   loadData()
     .then(rows => {
-      const prints = rows.filter(r => r.cp_model === modelName);
+      const prints = rows.filter(r =>
+        r.cp_model === modelName &&
+        (!categoryFilter || r.cp_category === categoryFilter)
+      );
 
       if (!prints.length) {
         countEl.textContent = '000';

@@ -76,6 +76,7 @@ function naturalCompare(a, b) {
   return a.localeCompare(b, 'ru', { numeric: true, sensitivity: 'base' });
 }
 
+
 const TIER_ORDER = ['iPhone', 'Tier 1', 'Tier 2', 'Tier 3', 'Tier 4', 'Tier 0'];
 function tierRank(tier) {
   const i = TIER_ORDER.indexOf(tier);
@@ -85,22 +86,45 @@ function tierRank(tier) {
 /* ======================================================
    ГЛАВНАЯ СТРАНИЦА
    ====================================================== */
+function shortCategoryName(cat) {
+  return cat.replace(/^\d+\.\d+\.\s*/, '');
+}
+
 function initHome() {
-  const listEl   = document.getElementById('models-list');
-  const countEl  = document.getElementById('model-count');
-  const searchEl = document.getElementById('search');
-  const clearBtn = document.getElementById('clear-search');
-  const emptyEl  = document.getElementById('empty-state');
+  const listEl     = document.getElementById('models-list');
+  const countEl    = document.getElementById('model-count');
+  const searchEl   = document.getElementById('search');
+  const clearBtn   = document.getElementById('clear-search');
+  const emptyEl    = document.getElementById('empty-state');
+  const filterEl   = document.getElementById('material-filter');
 
   if (!listEl) return;
 
-  let allModels = [];
+  let allRows = [];
+  let activeCategory = null;
 
   function render(filter = '') {
     const q = filter.trim().toLowerCase();
-    const filtered = q
-      ? allModels.filter(m => m.toLowerCase().includes(q))
-      : allModels;
+    const rows = activeCategory
+      ? allRows.filter(r => r.cp_category === activeCategory)
+      : allRows;
+
+    const modelMap = new Map();
+    for (const row of rows) {
+      if (!row.cp_model || modelMap.has(row.cp_model)) continue;
+      modelMap.set(row.cp_model, row);
+    }
+
+    const models = Array.from(modelMap.keys()).sort((a, b) => {
+      const ta = tierRank(modelMap.get(a).tier);
+      const tb = tierRank(modelMap.get(b).tier);
+      if (ta !== tb) return ta - tb;
+      return naturalCompare(a, b);
+    });
+
+    const filtered = q ? models.filter(m => m.toLowerCase().includes(q)) : models;
+
+    countEl.textContent = String(filtered.length).padStart(3, '0');
 
     if (!filtered.length) {
       listEl.innerHTML = '';
@@ -109,23 +133,41 @@ function initHome() {
     }
     emptyEl.hidden = true;
 
+    const catParam = activeCategory ? `&cat=${encodeURIComponent(activeCategory)}` : '';
     listEl.innerHTML = filtered.map(model => `
-      <a class="model-card" href="model.html?m=${encodeURIComponent(model)}">
+      <a class="model-card" href="model.html?m=${encodeURIComponent(model)}${catParam}">
         <div class="model-name">${escapeHtml(model)}</div>
         <span class="model-arrow">↗</span>
       </a>`).join('');
   }
 
+  function renderTabs(categories) {
+    if (!filterEl || categories.length < 2) return;
+    filterEl.innerHTML = ['__all__', ...categories].map(cat => {
+      const isAll = cat === '__all__';
+      const label = isAll ? 'Все' : shortCategoryName(cat);
+      const active = isAll && !activeCategory || cat === activeCategory;
+      return `<button class="material-tab${active ? ' active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(label)}</button>`;
+    }).join('');
+
+    filterEl.querySelectorAll('.material-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.cat === '__all__' ? null : btn.dataset.cat;
+        filterEl.querySelectorAll('.material-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render(searchEl.value);
+      });
+    });
+  }
+
   loadData()
     .then(rows => {
-      const grouped = groupByModel(rows);
-      allModels = Array.from(grouped.keys()).sort((a, b) => {
-        const ta = tierRank(grouped.get(a)[0].tier);
-        const tb = tierRank(grouped.get(b)[0].tier);
-        if (ta !== tb) return ta - tb;
-        return naturalCompare(a, b);
-      });
-      countEl.textContent = String(allModels.length).padStart(3, '0');
+      allRows = rows;
+
+      const catSet = new Set();
+      for (const row of rows) { if (row.cp_category) catSet.add(row.cp_category); }
+      renderTabs(Array.from(catSet).sort());
+
       render();
     })
     .catch(err => {
