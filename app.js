@@ -155,6 +155,22 @@ function initHome() {
         render(searchEl.value);
       });
     });
+
+    const arrowLeft  = document.getElementById('filter-arrow-left');
+    const arrowRight = document.getElementById('filter-arrow-right');
+    if (!arrowLeft || !arrowRight) return;
+
+    const STEP = 200;
+
+    function updateArrows() {
+      arrowLeft.disabled  = filterEl.scrollLeft <= 0;
+      arrowRight.disabled = filterEl.scrollLeft + filterEl.clientWidth >= filterEl.scrollWidth - 1;
+    }
+
+    arrowLeft.onclick  = () => { filterEl.scrollBy({ left: -STEP, behavior: 'smooth' }); };
+    arrowRight.onclick = () => { filterEl.scrollBy({ left:  STEP, behavior: 'smooth' }); };
+    filterEl.addEventListener('scroll', updateArrows, { passive: true });
+    updateArrows();
   }
 
   loadData()

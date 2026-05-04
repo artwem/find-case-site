@@ -236,13 +236,36 @@ body {
 .clear-btn:hover { color: var(--accent); }
 
 /* MATERIAL FILTER TABS */
+.filter-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+}
+.filter-arrow {
+  flex-shrink: 0;
+  width: 2rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+  z-index: 1;
+  padding: 0;
+}
+.filter-arrow:hover { background: var(--bg-alt); color: var(--ink); }
+.filter-arrow--left  { border-right: none; }
+.filter-arrow--right { border-left: none; }
+.filter-arrow[disabled] { opacity: 0.2; cursor: default; pointer-events: none; }
+
 .material-filter {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  margin-bottom: 1.5rem;
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -645,7 +668,7 @@ body {
   .footer-inner { flex-direction: column; gap: 0.5rem; }
   .meta-nav .label { display: none; }
   .meta-nav .divider { display: none; }
-  .material-filter { margin-bottom: 1rem; }
+  .filter-wrap { margin-bottom: 1rem; }
   .material-tab { padding: 0.55rem 0.9rem; font-size: 0.68rem; }
 }
 
@@ -665,7 +688,7 @@ body {
   .prints-grid { grid-template-columns: repeat(2, 1fr); }
   .btn-mp { min-height: 48px; font-size: 0.7rem; }
   .print-info { padding: 1rem 1.1rem 0.6rem; }
-  .material-filter { margin-bottom: 0.75rem; }
+  .filter-wrap { margin-bottom: 0.75rem; }
   .material-tab { padding: 0.5rem 0.8rem; font-size: 0.65rem; }
 
   /* Модал снизу на мобильном */
