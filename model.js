@@ -6,9 +6,10 @@
   const grid = document.getElementById('prints-grid');
   if (!grid) return;
 
-  const titleEl   = document.getElementById('model-title');
-  const eyebrowEl = document.getElementById('model-eyebrow');
-  const countEl   = document.getElementById('prints-count');
+  const titleEl    = document.getElementById('model-title');
+  const eyebrowEl  = document.getElementById('model-eyebrow');
+  const countEl    = document.getElementById('prints-count');
+  const categoryEl = document.getElementById('model-category');
 
   const params = new URLSearchParams(window.location.search);
   const modelName = params.get('m');
@@ -22,6 +23,11 @@
 
   titleEl.textContent = modelName;
   document.title = `${modelName} — Shift Case`;
+
+  if (categoryFilter && categoryEl) {
+    categoryEl.textContent = shortCategoryName(categoryFilter);
+    categoryEl.hidden = false;
+  }
 
   loadData()
     .then(rows => {

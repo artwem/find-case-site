@@ -173,6 +173,14 @@ body {
 }
 
 /* MODEL HERO */
+.model-category {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
 .model-hero {
   margin-bottom: 1.5rem;
   padding-bottom: 1.25rem;
