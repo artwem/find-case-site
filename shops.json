@@ -1,0 +1,41 @@
+{
+  "wb": [
+    {
+      "ip": "Бойко",
+      "slug": "wb-boyko",
+      "default": false
+    },
+    {
+      "ip": "Брайт Кейс",
+      "slug": "wb-brayt-keys",
+      "default": true
+    },
+    {
+      "ip": "Качалов",
+      "slug": "wb-kachalov",
+      "default": false
+    },
+    {
+      "ip": "Сыворотко",
+      "slug": "wb-syvorotko",
+      "default": false
+    }
+  ],
+  "ozon": [
+    {
+      "ip": "Брайт Кейс",
+      "slug": "ozon-brayt-keys",
+      "default": false
+    },
+    {
+      "ip": "Качалов",
+      "slug": "ozon-kachalov",
+      "default": true
+    },
+    {
+      "ip": "Сыворотко",
+      "slug": "ozon-syvorotko",
+      "default": false
+    }
+  ]
+}
